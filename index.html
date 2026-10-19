@@ -11,7 +11,7 @@
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<nav class="nav"><a href="#abstract">Abstract</a><a href="#intro">Intro</a><a href="#naive">Naive</a><a href="#history">Evolution</a><a href="#interactive-demo">Demo</a><a href="#proofs">Maths</a><a href="#applications">Uses</a><a href="#references">Refs</a></nav>
+<nav class="nav"><a href="#abstract">Abstract</a><a href="#intro">Intro</a><a href="#naive">Naive</a><a href="#history">Evolution</a><a href="#interactive-demo">Demo</a><a href="#proofs">Maths</a><a href="#holes">Holes</a><a href="#applications">Uses</a><a href="#conclusion">Conclusion</a><a href="#references">Refs</a></nav>
 
 <header class="hero">
   <div class="hero-content">
@@ -140,45 +140,40 @@
   <h2>4. Algorithmic Evolution</h2>
   <p>All three algorithms below are exact dynamic programs over sub-polygons cut off by a diagonal. They differ in how many subproblems they create and how much each one costs. Here \(n\) is the number of vertices and \(r\) the number of reflex vertices.</p>
 
-  <!-- TODO (VERIFY): GREENE: total confirmed. The O(rn) x O(rn) split is a structural estimate (not in the 2002 paper). -->
-<div class="algo"><span class="year">1983</span><h3>Greene — \(O(n^2 r^2)\)</h3>
+  <div class="algo"><span class="year">1983</span><h3>Greene — \(O(n^2 r^2)\)</h3>
     <p><strong>Idea.</strong> For a diagonal \(d\), some convex piece of the optimal solution is incident to \(d\). Greene builds this piece vertex by vertex, removes it, and solves what remains.</p>
     <p><strong>Limit.</strong> Removing a piece with \(k\) sides can leave up to \(k-1\) separate sub-polygons: one problem becomes many, and every combination of piece shapes must be examined.</p>
     <details class="proof"><summary>Proof sketch of the bound</summary><p>A subproblem is a diagonal with a reflex endpoint, so there are \(O(rn)\) of them. Choosing the convex piece next to a diagonal means exploring \(O(rn)\) candidate extensions. Multiplying gives \(O(rn)\cdot O(rn)=O(n^2r^2)\).</p></details><div class="strip" data-strip="greene"></div></div>
 
   <div class="algo"><span class="year">1985</span><h3>Keil — \(O(nr^2\log r)\)</h3>
-    <p><!-- TODO (VERIFY): KEIL: total and narrowest pairs confirmed. The O(rn) x O(r log r) split is a structural estimate. -->
-<strong>What is new.</strong> Keil shows that not all extensions need testing. Among the candidate diagonals, only the <em>narrowest pairs</em> (the most closely bounding ones) can appear in an optimal solution, so the others are discarded.</p>
+    <p><strong>What is new.</strong> Keil shows that not all extensions need testing. Among the candidate diagonals, only the <em>narrowest pairs</em> (the most closely bounding ones) can appear in an optimal solution, so the others are discarded.</p>
     <p><strong>Gain.</strong> The number of subproblems stays \(O(rn)\), but the work per subproblem drops from about \(rn\) to \(r\log r\).</p>
     <details class="proof"><summary>Proof sketch of the bound</summary><p>Replacing the \(O(rn)\) work per subproblem by \(O(r\log r)\) gives \(O(rn)\cdot O(r\log r)=O(nr^2\log r)\). Correctness rests on the definition of narrowest pairs: the convex region of such a pair, near the diagonal, does not contain the convex region of any other minimum decomposition, so discarding the other candidates loses nothing.</p></details><div class="strip" data-strip="keil"></div></div>
 
   <div class="algo"><span class="year">2002</span><h3>Keil &amp; Snoeyink — \(O(n + r^2\min(r^2,n))\)</h3>
-    <p><!-- TODO (VERIFY): KEIL & SNOEYINK: bound and min(n,r^2) endpoints confirmed by your report; the states x work split matches it. Nothing left except a final read of the paper. -->
-<strong>What is new.</strong> Instead of removing whole convex pieces, the recurrence works on a <em>canonical triangulation</em> and removes a single triangle per step. A triangle leaves at most <strong>two</strong> subproblems, so the fan-out of Greene disappears.</p>
-    <p><strong>Gain.</strong> Restricting to biased convex decompositions leaves at most \(\min(n,r^2)\) useful convex endpoints, so the number of subproblems drops from \(O(rn)\) to about \(O(r\min(r^2,n))\), each solved in \(O(r)\) time. When \(r\) is small relative to \(n\), this is dramatically faster, and it never exceeds \(O(n^3)\).</p>
-    <details class="proof"><summary>Proof sketch of the bound</summary><p>States: \(O(r\min(r^2,n))\). Work per state: \(O(r)\). Product: \(O(r^2\min(r^2,n))\), plus \(O(n)\) for preprocessing. Since \(r\le n\), the total is at most \(O(n^3)\).</p></details><div class="strip" data-strip="ks"></div></div>
+    <p><strong>What is new.</strong> Instead of removing whole convex pieces, the recurrence works on a <em>canonical triangulation</em> and removes a single triangle per step. A triangle leaves at most <strong>two</strong> subproblems, so the fan-out of Greene disappears.</p>
+    <p><strong>Gain.</strong> Ray shooting first identifies a reduced set of at most \(\min(n,r^2)\) relevant convex vertices; the \(r\) reflex vertices are retained as well. For \(r\ge1\), the reduced polygon therefore has \(O(\min(n,r^2))\) vertices. Theorem 3's amortized stack analysis on this reduced input gives \(O(r^2\min(r^2,n))\) DP time. When \(r\) is small relative to \(n\), this is dramatically faster, and the full bound including preprocessing never exceeds \(O(n^3)\).</p>
+    <details class="proof"><summary>Proof sketch of the bound</summary><p>On an input of \(m\) vertices, Theorem 3 bounds the number of subroutine calls by fewer than \(mr^2\). A call takes constant time apart from stack pops. Each call pushes only a bounded number of entries, and entries can be popped only after being pushed; charging each pop to its push therefore bounds all pops over the run by the total number of pushes, \(O(mr^2)\). The DP time is thus \(O(mr^2)\). Ray shooting is a separate preprocessing step: it retains the \(r\) reflex vertices and at most \(\min(n,r^2)\) relevant convex vertices, so \(m=O(\min(n,r^2))\) for \(r\ge1\). Substitution gives \(O(r^2\min(r^2,n))\), plus \(O(n)\) preprocessing. For \(r=0\), the polygon is already convex and the linear preprocessing bound applies.</p></details><div class="strip" data-strip="ks"></div></div>
 
-  <!-- TODO (VERIFY): Comparison table: totals confirmed; Greene/Keil columns are structural estimates (explained in "How the bounds are derived"). -->
-<div class="table-wrap"><table>
+  <div class="table-wrap"><table>
     <tr><th></th><th>Greene 1983</th><th>Keil 1985</th><th>Keil &amp; Snoeyink 2002</th></tr>
-    <tr><td>Subproblems</td><td>\(O(rn)\)</td><td>\(O(rn)\)</td><td>\(O(r\min(r^2,n))\)</td></tr>
-    <tr><td>Work per subproblem</td><td>\(O(rn)\)</td><td>\(O(r\log r)\)</td><td>\(O(r)\)</td></tr>
+    <tr><td>Subproblems / calls</td><td>\(O(rn)\)</td><td>\(O(rn)\)</td><td>\(&lt; nr^2\) calls</td></tr>
+    <tr><td>Work per subproblem</td><td>\(O(rn)\)</td><td>\(O(r\log r)\)</td><td>constant + pops (amortized)</td></tr>
     <tr><td>Splits into</td><td>many parts</td><td>many parts</td><td>at most 2</td></tr>
     <tr><td>Total</td><td>\(O(n^2r^2)\)</td><td>\(O(nr^2\log r)\)</td><td>\(O(n+r^2\min(r^2,n))\)</td></tr>
   </table></div>
 
   <h3>How the bounds are derived</h3>
-  <p>For a dynamic program, <em>running time = number of states × work per state</em>. Here a state is a diagonal, i.e. a sub-polygon to solve. Reading the three algorithms this way shows where each gain comes from.</p>
+  <p>For Greene and Keil, a simple reading works: <em>running time = number of states × work per state</em>, where a state is a diagonal, i.e. a sub-polygon to solve. The proof for Keil &amp; Snoeyink is different: it is an <em>amortized</em> argument, explained in the last item.</p>
   <ul class="feature-list">
     <li><strong>Greene.</strong> A useful diagonal has at least one reflex endpoint (\(r\) choices) and any other endpoint (\(n\) choices): \(O(rn)\) states. Building the convex piece incident to a diagonal costs about \(O(rn)\) again. Total: \(O(rn)\cdot O(rn)=O(n^2r^2)\).</li>
     <li><strong>Keil.</strong> Same \(O(rn)\) states, but the narrowest pairs discard most candidates, so each state costs only \(O(r\log r)\). Total: \(O(rn)\cdot O(r\log r)=O(nr^2\log r)\).</li>
-    <li><strong>Keil &amp; Snoeyink.</strong> To prove the complexity, the 2002 paper (Theorem 3) does not use the "states × work" logic. Instead, it demonstrates that the algorithm globally makes at most \(O(r^2\min(r^2,n))\) calls to its subroutines (thanks to the initial ray-shooting reduction). During these calls, the computation time is a constant plus the number of elements popped from the stacks. Since elements are pushed at most once, the total number of pops over the entire execution cannot exceed \(O(r^2\min(r^2,n))\). Therefore, the total running time is strictly bounded by \(O(n + r^2\min(r^2,n))\).</li>
+    <li><strong>Keil &amp; Snoeyink.</strong> No "states × work" product here. On an input with \(m\) vertices, Theorem 3 bounds the number of subroutine calls by fewer than \(mr^2\). A call costs constant time plus its stack pops; each popped entry was pushed earlier, and each call pushes only a bounded number of entries. Charging pops to pushes bounds their total by \(O(mr^2)\), so the DP runs in \(O(mr^2)\). This is not where the \(n\)-to-\(\min(n,r^2)\) change comes from: the paper's ray-shooting preprocessing separately identifies at most \(\min(n,r^2)\) relevant convex vertices, in addition to the \(r\) reflex vertices. For \(r\ge1\), the reduced input has \(m=O(\min(n,r^2))\) vertices, giving \(O(r^2\min(r^2,n))\) DP time, plus \(O(n)\) preprocessing. For \(r=0\), the polygon is already convex and the time is \(O(n)\).</li>
   </ul>
   <p><strong>Sanity check.</strong> If \(r\) grows like \(n\), Greene gives \(n^4\) while Keil &amp; Snoeyink give \(n^2\cdot n=n^3\). If \(r\) is a constant, Keil &amp; Snoeyink reduce to \(O(n)\).</p>
-  <div class="info-box"><p><strong>What comes from the paper.</strong> The 2002 article states the total bounds and the \(\min(n,r^2)\) relevant endpoints. The split into states and work per state is a structural reading of those totals, not something the paper spells out for Greene and Keil.</p></div>
+  <div class="info-box"><p><strong>What comes from the paper.</strong> The 2002 article states the total bounds, the \(\min(n,r^2)\) relevant endpoints and the amortized argument for its own algorithm (Theorem 3). The split into states and work per state for Greene and Keil is a structural reading of their totals, not something the paper spells out.</p></div>
 
-  <!-- TODO (VERIFY): Breakthrough claims (n^4 -> n^3, no log factor, linear for constant r) validated in your report. -->
-<h3>Why the 2002 paper is a real breakthrough</h3>
+  <h3>Why the 2002 paper is a real breakthrough</h3>
   <ul class="feature-list">
     <li><strong>It changes the structure of the recurrence.</strong> Earlier algorithms only tuned the cost of each step; Keil &amp; Snoeyink removed the root cause, the fan-out of one problem into many.</li>
     <li><strong>It improves the worst case.</strong> From \(O(n^4)\) (Greene) to \(O(n^3)\), and it removes the \(\log r\) factor of Keil, since \(\min(r^2,n)\le n\).</li>
@@ -227,7 +222,7 @@
   <h3>From \(n\) to \(\min(n, r^2)\) relevant endpoints</h3>
   <p>Count the candidate states. A diagonal needs at least one reflex endpoint, and the other endpoint can be any vertex: \(r\times n\) pairs, hence \(O(rn)\) states for Greene and Keil. Keil &amp; Snoeyink restrict the problem to <em>biased convex decompositions</em>. They prove that we only need to consider diagonals ending at specific convex vertices (found by extending lines from reflex vertices). By using a ray-shooting preprocessing step, they eliminate useless convex vertices, reducing the number of valid endpoints to at most \(\min(n, r^2)\). This geometric reduction, combined with the DP, yields the final bound.</p>
   <h3>Why a canonical triangulation?</h3>
-  <p>If the geometric reduction above bounds the number of states, the <em>canonical triangulation</em> bounds the <em>fan-out</em> (the number of new subproblems created). A canonical triangulation is built with a fixed rule (e.g., connecting the lowest-indexed reflex vertex to others in the piece), so every sub-polygon has exactly one predictable triangle on its base diagonal. The recurrence is then unambiguous, and removing this single triangle creates at most two smaller subproblems instead of splitting into many parts like Greene did.</p>
+  <p>If the geometric reduction above bounds the number of relevant endpoints, the <em>canonical triangulation</em> bounds the <em>fan-out</em> (the number of new subproblems created). A canonical triangulation is built with a fixed rule (e.g., connecting the lowest-indexed reflex vertex to others in the piece), so every sub-polygon has exactly one predictable triangle on its base diagonal. The recurrence is then unambiguous, and removing this single triangle creates at most two smaller subproblems instead of splitting into many parts like Greene did.</p>
   <h3>Why reflex vertices are so important</h3>
   <ul class="feature-list">
     <li><strong>Convexity:</strong> a polygon is convex exactly when it has no reflex vertex, so reflex vertices are the only obstacle.</li>
@@ -235,9 +230,8 @@
     <li><strong>Lower bound:</strong> each diagonal fixes at most two of them, so at least \(\lceil r/2\rceil+1\) pieces are needed.</li>
     <li><strong>Complexity:</strong> \(r\) measures how hard the polygon really is, which is why it appears in every bound.</li>
   </ul>
-  <!-- TODO (VERIFY): "Many real polygons have small r": heuristic justification, acceptable; add a source if you have one. -->
-<h3>Why \(r\) is an interesting parameter</h3>
-  <p>Many real polygons, such as floor plans, building footprints or parcels, have many vertices but few notches: a large \(n\) with a small \(r\). The cost \(O(n+r^2\min(r^2,n))\) then stays close to linear. This is not universal: a finely sampled curved boundary can have \(r\) proportional to \(n\), and the bound degrades to \(O(n^3)\).</p>
+  <h3>Why \(r\) is an interesting parameter</h3>
+  <p>Polygons such as floor plans or building footprints often have many vertices but few notches: a large \(n\) with a small \(r\). The cost \(O(n+r^2\min(r^2,n))\) then stays close to linear. This is not universal: a finely sampled curved boundary can have \(r\) proportional to \(n\), and the bound degrades to \(O(n^3)\).</p>
 </section>
 
 
@@ -267,15 +261,14 @@
 <section id="proofs" class="card reveal">
   <h2>6. Under the Hood: Mathematics</h2>
   <p>Trying every set of diagonals takes exponential time. Dynamic programming avoids this thanks to <strong>optimal substructure</strong>: an optimal decomposition of a polygon contains optimal decompositions of its sub-polygons.</p>
-  <!-- TODO (VERIFY): Steps: validated except wording details (stack contents, -1 base weight). RE/DE-diagonals are intentionally not defined in the text. -->
-<h3>The Keil &amp; Snoeyink algorithm, step by step</h3>
+  <h3>The Keil &amp; Snoeyink algorithm, step by step</h3>
   <p>A simplified outline of the algorithm, to see how the pieces fit together:</p>
   <ol class="steps">
     <li><strong>Step 1: Preprocess.</strong> Identify the \(r\) reflex vertices. Use ray shooting to find the limited set of convex vertices that can actually form valid optimal diagonals (RE-diagonals and DE-diagonals).</li>
-    <li><strong>Step 2: List the candidate diagonals.</strong> Compute which pairs of these relevant vertices see each other inside the polygon. Thanks to the preprocessing, there are at most \(O(\min(n, r^2))\) valid convex endpoints, drastically reducing the state space.</li>
-    <li><strong>Step 3: Define the subproblems.</strong> Each candidate diagonal cuts off a sub-polygon. Its answer is the minimum number of convex pieces needed to decompose it, along with a stack of the "narrowest" geometric shapes achieving this minimum.</li>
-    <li><strong>Step 4: Handle the base case.</strong> The weight (piece count) of each polygon edge is initialized to \(-1\) by convention.</li>
-    <li><strong>Step 5: Apply the recurrence.</strong> For each sub-polygon, try the possible canonical triangles next to its diagonal. Each choice leaves at most two smaller sub-polygons. Instead of explicitly calculating a merge penalty, the algorithm pops solutions from the stored stacks in angular order to find the narrowest piece that does not create a reflex angle.</li>
+    <li><strong>Step 2: List the candidate diagonals.</strong> Compute which pairs of these relevant vertices see each other inside the polygon. Ray shooting reduces the convex endpoints to at most \(\min(n,r^2)\), in addition to the \(r\) reflex vertices.</li>
+    <li><strong>Step 3: Define the subproblems.</strong> Each candidate diagonal cuts off a sub-polygon. Its answer records the minimum number of convex pieces and a stack of narrowest-pair candidates associated with optimal solutions.</li>
+    <li><strong>Step 4: Handle the base case.</strong> The polygon's own edges are the simplest subproblems: they need no cut and serve as the starting point of the table.</li>
+    <li><strong>Step 5: Apply the recurrence.</strong> For each sub-polygon, try the possible canonical triangles next to its diagonal. Each choice leaves at most two smaller sub-polygons. The stack operations maintain and compare the narrowest-pair candidates in angular order, discarding entries that cannot contribute to a valid minimum merge.</li>
     <li><strong>Step 6: Fill the table bottom-up.</strong> Process the sub-polygons from the smallest to the largest, so every answer is computed once and reused.</li>
     <li><strong>Step 7: Reconstruct the solution.</strong> Starting from the whole polygon, follow the stored best choices back down to form the minimum convex decomposition.</li>
   </ol>
@@ -296,7 +289,7 @@
   $$\mathrm{OPT}(i,j)=\min_{k}\big(\mathrm{OPT}(i,k)+\mathrm{OPT}(k,j)-\text{merge}(i,j,k)\big).$$
   Since every valid choice of \(k\) is tested, the minimum over all of them is the optimum. <em>This formula is a didactic simplification. The actual algorithm has no subtractive merge term: it handles merging dynamically, adjusting the count (+1 or +2) according to whether the merge creates a reflex angle, using stacks of narrowest pairs.</em></p>
   <h3>The merge problem</h3>
-  <p>Adding \(\mathrm{OPT}(i,k)+\mathrm{OPT}(k,j)+1\) for the triangle overcounts if the triangle and the adjacent pieces can fuse into <em>one</em> convex piece. Whether they can depends on the angles: if the merged angle at the diagonal's endpoint is less than 180°, the merge is legal. To handle this efficiently, the DP does not just store the optimal count. It maintains a <em>stack of narrowest pairs</em> (the tightest possible convex bounds of the sub-solution) sorted by angle. By popping from these stacks, the algorithm finds the best valid merge without exploring all geometric combinations.</p>
+  <p>Adding \(\mathrm{OPT}(i,k)+\mathrm{OPT}(k,j)+1\) for the triangle overcounts if the triangle and adjacent pieces can fuse into <em>one</em> convex piece. Whether they can depends on the angles at the shared vertices. To handle this efficiently, the DP stores the optimal count together with a stack of narrowest-pair candidates, maintained in angular order. The recurrence pops candidates that cannot give a valid convex merge instead of enumerating every geometric combination.</p>
   <figure class="visual-box fig">
     <svg viewBox="0 0 640 270" role="img" aria-label="Legal and illegal merges">
       <g transform="translate(20,10)"><polygon points="40,40 160,40 190,160 30,150" fill="rgba(16,185,129,.2)" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round"/><line x1="160" y1="40" x2="30" y2="150" stroke="#ec4899" stroke-width="2.5" stroke-dasharray="6,5"/>
@@ -305,7 +298,7 @@
         <text x="110" y="235" text-anchor="middle" font-size="14" font-weight="600" fill="#ef4444">Merge forbidden: reflex angle &gt; 180°</text></g>
     </svg>
   </figure>
-  <h3>Complexity</h3>
+  <h3>A first, naive DP bound</h3>
   <ul class="feature-list">
     <li><strong>States:</strong> a subproblem is a diagonal, and there are at most \(\binom{n}{2}=O(n^2)\) of them.</li>
     <li><strong>Transition:</strong> choosing \(v_k\) costs \(O(n)\) candidates per state.</li>
@@ -343,15 +336,15 @@
   <p>Minimum convex decomposition is a good example of how a few basic notions of computational geometry (convexity, reflex vertices, diagonals, triangulations) combine into a problem that is easy to state and surprisingly hard to solve well. A naive search is exact but unusable beyond a handful of vertices, a greedy heuristic is fast but only approximate, and the dynamic-programming algorithms of Greene, Keil and Keil &amp; Snoeyink bring the exact answer into polynomial time, step after step. The problem remains relevant today, since convex pieces are the standard building blocks of physics engines, robot navigation and shape analysis. Yet finding the true optimum is not easy: the best exact algorithm is intricate, and as soon as the polygon has holes the problem becomes NP-hard, so in practice simple heuristics are often what actually gets used.</p>
 </section>
 
-<!-- TODO (VERIFY): Verify every remaining reference (authors, title, journal, volume, year); kept: Chazelle & Dobkin, Greene, Hertel-Mehlhorn, Keil 1985, Keil & Snoeyink, Lingas. -->
 <section id="references" class="card reveal">
   <h2>10. References</h2>
   <ul class="refs">
-        <li>B. Chazelle, D. P. Dobkin, <em>Optimal convex decompositions</em>, in Computational Geometry (G. T. Toussaint, ed.), North-Holland, 1985.</li>
-    <li>D. H. Greene, <em>The decomposition of polygons into convex parts</em>, Advances in Computing Research 1, 1983.</li>
-    <li>S. Hertel, K. Mehlhorn, <em>Fast triangulation of the plane with respect to simple polygons</em>, Information and Control 64, 1985.</li>
-    <li>J. M. Keil, <em>Decomposing a polygon into simpler components</em>, SIAM Journal on Computing 14(4), 1985.</li>
-    <li>J. M. Keil, J. Snoeyink, <em>On the time bound for convex decomposition of simple polygons</em>, International Journal of Computational Geometry &amp; Applications 12(3), 2002.</li>
+    <li>B. Chazelle, D. P. Dobkin, <em>Optimal Convex Decompositions</em>, in <em>Computational Geometry</em> (G. T. Toussaint, ed.), North-Holland, 1985, pp. 63–133. This work allows Steiner points.</li>
+    <li>D. H. Greene, <em>The Decomposition of Polygons into Convex Parts</em>, <em>Advances in Computing Research</em>, vol. 1, 1983.</li>
+    <li>S. Hertel, K. Mehlhorn, <em>Fast Triangulation of the Plane with Respect to Simple Polygons</em>, <em>Information and Control</em>, 64(1–3), 1985, pp. 52–76.</li>
+    <li>J. M. Keil, <em>Decomposing a Polygon into Simpler Components</em>, <em>SIAM Journal on Computing</em>, 14(4), 1985, pp. 799–817.</li>
+    <li>J. M. Keil, J. Snoeyink, <em>On the Time Bound for Convex Decomposition of Simple Polygons</em>, <em>International Journal of Computational Geometry &amp; Applications</em>, 12(3), 2002, pp. 181–192.</li>
+    <li>A. Lingas, <em>The Power of Non-Rectilinear Holes</em>, in <em>Automata, Languages and Programming</em> (ICALP 1982), Lecture Notes in Computer Science, vol. 140, Springer, 1982, pp. 369–383.</li>
   </ul>
 </section>
 </main>
