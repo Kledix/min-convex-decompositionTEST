@@ -146,12 +146,12 @@
     <details class="proof"><summary>Proof sketch of the bound</summary><p>A subproblem is a diagonal with a reflex endpoint, so there are \(O(rn)\) of them. Choosing the convex piece next to a diagonal means exploring \(O(rn)\) candidate extensions. Multiplying gives \(O(rn)\cdot O(rn)=O(n^2r^2)\).</p></details><div class="strip" data-strip="greene"></div></div>
 
   <div class="algo"><span class="year">1985</span><h3>Keil — \(O(nr^2\log r)\)</h3>
-    <p><strong>What is new.</strong> Keil shows that not all extensions need testing. Among the candidate diagonals, only the <em>narrowest pairs</em> (the most closely bounding ones) can appear in an optimal solution, so the others are discarded.</p>
-    <p><strong>Gain.</strong> The number of subproblems stays \(O(rn)\), but the work per subproblem drops from about \(rn\) to \(r\log r\).</p>
+    <p><strong>What is new.</strong> Instead of removing a whole convex piece, Keil removes a single triangle, leaving at most <strong>two</strong> subproblems. He also shows that among candidate diagonals, only the <em>narrowest pairs</em> can appear in an optimal solution, allowing the rest to be discarded.</p>
+    <p><strong>Gain.</strong> The fan-out of Greene disappears. The number of subproblems stays \(O(rn)\), but the work per subproblem drops to \(O(r\log r)\).</p>
     <details class="proof"><summary>Proof sketch of the bound</summary><p>Replacing the \(O(rn)\) work per subproblem by \(O(r\log r)\) gives \(O(rn)\cdot O(r\log r)=O(nr^2\log r)\). Correctness rests on the definition of narrowest pairs: the convex region of such a pair, near the diagonal, does not contain the convex region of any other minimum decomposition, so discarding the other candidates loses nothing.</p></details><div class="strip" data-strip="keil"></div></div>
 
   <div class="algo"><span class="year">2002</span><h3>Keil &amp; Snoeyink — \(O(n + r^2\min(r^2,n))\)</h3>
-    <p><strong>What is new.</strong> Instead of removing whole convex pieces, the recurrence works on a <em>canonical triangulation</em> and removes a single triangle per step. A triangle leaves at most <strong>two</strong> subproblems, so the fan-out of Greene disappears.</p>
+    <p><strong>What is new.</strong> Keil &amp; Snoeyink introduce three major improvements: a <em>canonical triangulation</em> to resolve merging ambiguities, replacing the search structure with <em>stacks</em> to drop the \(\log r\) factor, and using ray shooting to restrict the problem to <em>biased convex decompositions</em>.</p>
     <p><strong>Gain.</strong> Ray shooting first identifies a reduced set of at most \(\min(n,r^2)\) relevant convex vertices; the \(r\) reflex vertices are retained as well. For \(r\ge1\), the reduced polygon therefore has \(O(\min(n,r^2))\) vertices. Theorem 3's amortized stack analysis on this reduced input gives \(O(r^2\min(r^2,n))\) DP time. When \(r\) is small relative to \(n\), this is dramatically faster, and the full bound including preprocessing never exceeds \(O(n^3)\).</p>
     <details class="proof"><summary>Proof sketch of the bound</summary><p>The DP is first shown to take \(O(n r^2)\) time globally because it makes at most \(O(n r^2)\) subroutine calls, and the total internal work is bounded by \(O(n r^2)\) stack pops. Then, a geometric reduction restricts the number of relevant convex vertices to at most \(\min(n, r^2)\). Running the DP on this geometrically reduced problem substitutes \(n\) with \(\min(n, r^2)\), giving \(O(r^2\min(r^2,n))\), plus \(O(n)\) for the initial preprocessing. Since \(r \le n\), the total is at most \(O(n^3)\).</p></details>
   
@@ -180,8 +180,8 @@
   </ul>
 
   <h3>What does "one triangle per step" mean?</h3>
-  <p>Greene removes a whole convex piece with \(k\) sides, and every side except the base opens its own independent sub-polygon: the problem explodes into many at once. Keil &amp; Snoeyink fix a <em>canonical triangulation</em> (a triangulation chosen by a fixed rule) so that, for each sub-polygon, the triangle sitting on its base diagonal is predictable. Removing only that triangle leaves at most two sub-polygons.</p>
-  <figure class="visual-box fig">
+  <p>Greene removes a whole convex piece with \(k\) sides, and every side except the base opens its own independent sub-polygon: the problem explodes into many at once. Keil (1985) introduced the idea of removing a single triangle to leave at most two sub-polygons. Keil &amp; Snoeyink push this further by fixing a <em>canonical triangulation</em> (a triangulation chosen by a fixed rule) so that, for each sub-polygon, the triangle sitting on its base diagonal is fully predictable. The recurrence is then unambiguous.</p>
+    <figure class="visual-box fig">
     <svg viewBox="0 0 660 310" role="img" aria-label="Fan-out of removing a convex piece versus removing a triangle">
       <g transform="translate(10,0)">
         <polygon points="110,200 190,200 225,130 150,75 75,130" fill="rgba(79,70,229,.3)" stroke="#1e1b4b" stroke-width="2.5"/>
@@ -272,21 +272,21 @@
     <li><strong>Step 7: Reconstruct the solution.</strong> Starting from the whole polygon, follow the stored best choices back down to form the minimum convex decomposition.</li>
   </ol>
   <h3>Subproblems</h3>
-  <p>Let \(P=(v_0,\dots,v_{n-1})\). For a diagonal \((v_i,v_j)\), let \(P_{i,j}\) be the sub-polygon it cuts off, and \(\mathrm{OPT}(i,j)\) the minimum number of convex pieces for it.</p>
+  <p>Let \(P=(p_0,\dots,p_{n-1})\). For a diagonal \(d_{ik}\), let \(P_{ik}\) be the sub-polygon it cuts off, and \(w_{ik}\) the minimum number of convex pieces for it.</p>
   <figure class="visual-box fig" style="max-width:520px;margin:1.5rem auto">
     <svg viewBox="0 0 330 250" role="img" aria-label="DP state: sub-polygon cut by a diagonal">
       <polygon points="150,25 260,70 290,160 220,225 110,225 35,170 40,80" fill="rgba(79,70,229,.08)" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round"/>
       <polygon points="40,80 150,25 260,70 290,160" fill="rgba(236,72,153,.3)"/>
       <line x1="40" y1="80" x2="290" y2="160" stroke="#ec4899" stroke-width="3" stroke-dasharray="7,5"/>
       <g fill="#1e1b4b"><circle cx="40" cy="80" r="5"/><circle cx="290" cy="160" r="5"/></g>
-      <g font-size="15" fill="#1e1b4b"><text x="10" y="72">v_i</text><text x="296" y="178">v_j</text><text x="130" y="85" font-weight="600">P(i,j)</text><text x="140" y="185" fill="#6b7280">rest of P</text></g>
+      <g font-size="15" fill="#1e1b4b"><text x="10" y="72">p_i</text><text x="296" y="178">p_k</text><text x="130" y="85" font-weight="600">P_{ik}</text><text x="140" y="185" fill="#6b7280">rest of P</text></g>
     </svg>
-    <figcaption>A DP state: the diagonal \((v_i,v_j)\) and the shaded sub-polygon \(P_{i,j}\) it cuts off. \(\mathrm{OPT}(i,j)\) is its optimal piece count.</figcaption>
+    <figcaption>A DP state: the diagonal \(d_{ik}\) and the shaded sub-polygon \(P_{ik}\) it cuts off. \(w_{ik}\) is its optimal piece count.</figcaption>
   </figure>
   <h3>Recurrence (sketch)</h3>
-  <p>Fix the canonical triangle \(\Delta(v_i,v_j,v_k)\) incident to the diagonal. It leaves at most two smaller subproblems, \(P_{i,k}\) and \(P_{k,j}\). Taking the best \(k\) and accounting for whether the triangle merges with a neighbouring piece gives
-  $$\mathrm{OPT}(i,j)=\min_{k}\big(\mathrm{OPT}(i,k)+\mathrm{OPT}(k,j)-\text{merge}(i,j,k)\big).$$
-  Since every valid choice of \(k\) is tested, the minimum over all of them is the optimum. <em>This formula is a didactic simplification. The actual algorithm has no subtractive merge term: it handles merging dynamically, adjusting the count (+1 or +2) according to whether the merge creates a reflex angle, using stacks of narrowest pairs.</em></p>
+  <p>Fix the canonical triangle \(\Delta(p_i,p_j,p_k)\) incident to the diagonal \(d_{ik}\). It leaves at most two smaller subproblems, \(P_{ij}\) and \(P_{jk}\). Taking the best \(j\) (with \(i < j < k\)) gives the additive recurrence:
+  $$w_{ik} = \min_{j} \begin{cases} w_{ij} + w_{jk} + 2 & \text{if } d_{ij} \text{ must be included} \\ w_{ij} + w_{jk} + 1 & \text{otherwise} \end{cases}$$
+  The algorithm dynamically determines whether the penalty is +1 or +2 depending on whether merging the triangle with the adjacent pieces creates a reflex angle. Since every valid choice of \(j\) is tested, the minimum over all of them is the optimum.</p>
   <h3>The merge problem</h3>
   <p>Adding \(\mathrm{OPT}(i,k)+\mathrm{OPT}(k,j)+1\) for the triangle overcounts if the triangle and adjacent pieces can fuse into <em>one</em> convex piece. Whether they can depends on the angles at the shared vertices. To handle this efficiently, the DP stores the optimal count together with a stack of narrowest-pair candidates, maintained in angular order. The recurrence pops candidates that cannot give a valid convex merge instead of enumerating every geometric combination.</p>
   <figure class="visual-box fig">
