@@ -1,0 +1,257 @@
+/* Paper walkthrough (new part) - self-contained, uses variables from style.css */
+.pw-fig svg {
+  width: 100%;
+  height: auto;
+  display: block
+}
+
+.pw-fig .poly {
+  fill: rgba(79, 70, 229, .07);
+  stroke: #1e1b4b;
+  stroke-width: 3;
+  stroke-linejoin: round
+}
+
+.pw-fig .diag {
+  stroke: #ec4899;
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+  fill: none
+}
+
+.pw-fig .diag.solid {
+  stroke-dasharray: none;
+  stroke-width: 4
+}
+
+.pw-fig .ghost {
+  stroke: #9ca3af;
+  stroke-width: 3;
+  stroke-dasharray: 5 5;
+  fill: none
+}
+
+.pw-fig .bad {
+  stroke: #ef4444;
+  stroke-width: 3.5;
+  fill: none
+}
+
+.pw-fig .v {
+  fill: #1e1b4b;
+  stroke: #fff;
+  stroke-width: 2
+}
+
+.pw-fig .v.r {
+  fill: #ef4444
+}
+
+.pw-fig text {
+  font: 600 12px Inter, sans-serif;
+  fill: #1e1b4b
+}
+
+.pw-fig text.red {
+  fill: #ef4444
+}
+
+.pw-fig text.pink {
+  fill: #ec4899
+}
+
+.pw-fig text.mut {
+  fill: #6b7280;
+  font-weight: 400
+}
+
+.pw-fig .pa {
+  fill: hsla(230, 75%, 60%, .35)
+}
+
+.pw-fig .pb {
+  fill: hsla(300, 75%, 60%, .35)
+}
+
+.pw-fig .pc {
+  fill: hsla(160, 65%, 45%, .35)
+}
+
+.pw-part {
+  font-size: .8rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--primary);
+  font-weight: 700;
+  margin: 0 0 .4rem
+}
+
+.pw-legend {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  font-size: .92rem;
+  color: var(--muted);
+  margin: .5rem 0 0
+}
+
+.pw-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: .35rem;
+  vertical-align: -1px
+}
+
+.claim-box {
+  background: linear-gradient(135deg, rgba(79, 70, 229, .08), rgba(236, 72, 153, .08));
+  border: 2px solid var(--primary);
+  border-left-width: 10px;
+  border-radius: var(--r);
+  padding: 1.6rem 2rem;
+  margin: 2.5rem 0
+}
+
+.claim-tag {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-size: .8rem;
+  padding: .25rem .9rem;
+  border-radius: 999px;
+  margin-bottom: .8rem
+}
+
+.claim-statement {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0 0 1.2rem
+}
+
+.claim-box h4 {
+  margin: 1.2rem 0 .5rem;
+  color: var(--primary);
+  font-size: 1.05rem
+}
+
+.claim-box ol,
+.claim-box ul {
+  margin: .4rem 0 .4rem 1.2rem;
+  padding: 0
+}
+
+.claim-box li {
+  margin-bottom: .6rem
+}
+
+.claim-qed {
+  margin: 1rem 0 0;
+  font-weight: 700;
+  color: var(--ink)
+}
+
+.claim-end {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  text-align: center;
+  border-radius: var(--r);
+  padding: 1.3rem 1.8rem;
+  margin: 1.5rem 0 2.5rem;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, .25)
+}
+
+#pw h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 2.8rem 0 1rem;
+  padding: .5rem 0 .6rem .9rem;
+  border-left: 6px solid var(--secondary);
+  border-bottom: 2px solid #e0e7ff;
+  letter-spacing: -.01em;
+}
+
+.key-box {
+  background: linear-gradient(135deg, var(--ink), #3730a3);
+  color: #fff;
+  border-radius: 12px;
+  padding: .8rem 1.3rem;
+  margin: 1.4rem 0;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(30, 27, 75, .2)
+}
+
+.key-box p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4
+}
+
+.key-box span {
+  color: #f9a8d4
+}
+
+.pw-fig text.big {
+  font-size: 20px
+}
+
+.pw-fig text.blue {
+  fill: #4338ca
+}
+
+.pw-fig text.gray {
+  fill: #9ca3af
+}
+
+.pw-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .8rem;
+  margin: 1.5rem 0
+}
+
+.pw-strip figure {
+  margin: 0;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: .6rem
+}
+
+.pw-strip svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #fff;
+  border-radius: 8px
+}
+
+.pw-strip figcaption {
+  font-size: .88rem;
+  text-align: center;
+  margin-top: .5rem;
+  line-height: 1.4
+}
+
+@media(max-width:800px) {
+  .pw-strip {
+    grid-template-columns: repeat(2, 1fr)
+  }
+}
+
+.pw-fig text.blue {
+  fill: #4338ca
+}
+
+.pw-fig text.gray {
+  fill: #9ca3af
+}
