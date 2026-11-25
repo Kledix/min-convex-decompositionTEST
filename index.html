@@ -47,6 +47,42 @@
       <p class="pw-part">Walkthrough · Part 1</p>
       <h2>1. Foundations: what exactly are we cutting?</h2>
 
+      <h3>Intuitive Motivation: The Robot Vacuum</h3>
+      <p>Imagine a robot vacuum in an L-shaped flat. To clean efficiently without blind spots, every zone must have
+        <em>no hidden corners</em>—meaning any two points in a zone can see each other.
+      </p>
+
+      <div class="analogy-visuals">
+        <figure class="visual-box">
+          <svg viewBox="0 0 300 300" role="img" aria-label="L-shaped room where the robot cannot see a point">
+            <polygon points="50,50 150,50 150,150 250,150 250,250 50,250" fill="rgba(79,70,229,.12)" stroke="#1e1b4b"
+              stroke-width="3" stroke-linejoin="round" />
+            <line x1="90" y1="90" x2="230" y2="200" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6,5" />
+            <circle cx="90" cy="90" r="10" fill="#4f46e5" /><text x="70" y="75" font-size="14"
+              fill="#1e1b4b">Robot</text>
+            <circle cx="230" cy="200" r="9" fill="#ef4444" opacity=".5" /><text x="185" y="228" font-size="14"
+              fill="#ef4444">Hidden spot</text>
+            <circle cx="150" cy="150" r="5" fill="#1e1b4b" /><text x="158" y="140" font-size="12" fill="#1e1b4b">reflex
+              vertex</text>
+          </svg>
+          <figcaption><strong>Concave room.</strong> Line of sight is blocked by the reflex corner.</figcaption>
+        </figure>
+        <figure class="visual-box">
+          <svg viewBox="0 0 300 300" role="img" aria-label="Same room cut into two convex zones">
+            <polygon points="50,50 150,50 150,150 50,150" fill="rgba(79,70,229,.22)" />
+            <polygon points="50,150 150,150 250,150 250,250 50,250" fill="rgba(236,72,153,.22)" />
+            <polygon points="50,50 150,50 150,150 250,150 250,250 50,250" fill="none" stroke="#1e1b4b" stroke-width="3"
+              stroke-linejoin="round" />
+            <line x1="50" y1="150" x2="150" y2="150" stroke="#ec4899" stroke-width="4" stroke-dasharray="7,6" />
+            <text x="75" y="105" font-size="14" fill="#1e1b4b">Zone A</text><text x="130" y="205" font-size="14"
+              fill="#1e1b4b">Zone B</text>
+          </svg>
+          <figcaption><strong>Convex decomposition.</strong> One cut from the reflex corner gives two fully visible
+            zones.</figcaption>
+        </figure>
+      </div>
+
+
       <h3>Definitions</h3>
       <p><strong>(a) Simple polygon.</strong> A polygon \(P\) with \(n\) vertices: a closed chain of straight edges that
         never crosses itself.</p>
@@ -88,6 +124,13 @@
       <h3>Goal</h3>
       <p>Cut the inside of \(P\) with <strong>internal diagonals that do not cross</strong>, so that every piece is
         convex, using the <strong>minimum number of diagonals</strong>.</p>
+      <details class="proof">
+        <summary>What about Steiner points?</summary>
+        <p><strong>Steiner points are not allowed</strong> in this version of the problem. A <em>Steiner point</em> is
+          an extra vertex added on an edge or inside the polygon where a cut can end. Here, every diagonal must strictly
+          join two existing vertices of \(P\).</p>
+      </details>
+
 
       <h3>Intuition</h3>
       <p><strong>Reflex vertices are the obstacle.</strong> A vertex is <strong>reflex</strong> when its interior angle
@@ -1492,6 +1535,27 @@
         from Section 2, which still applies. This lies beyond the scope of this project.</p>
     </section>
 
+    <section id="after-2002" class="card reveal">
+      <h2>What Came After 2002?</h2>
+
+      <div class="tile" style="border-left:5px solid var(--primary);margin-top:1.25rem">
+        <div class="year">2006</div>
+        <h3 style="margin-top:.2rem">Approximate Convex Decomposition (Lien &amp; Amato)</h3>
+        <p><strong>Core idea:</strong> Strict convexity forces cuts even on minor surface noise or shallow dents.
+          Instead, allow a small user-defined <em>concavity tolerance</em> and iteratively resolve only the deepest
+          reflex notches.</p>
+        <p style="margin-top:.6rem"><strong>Two major payoffs:</strong></p>
+        <ul style="margin:.4rem 0 0 1.2rem;padding:0;color:var(--muted)">
+          <li><strong>Significantly smaller decomposition:</strong> Ignoring tiny notches avoids unnecessary cuts,
+            yielding far fewer total pieces while preserving similar practical benefits to exact convex parts.</li>
+          <li><strong>Computed more efficiently:</strong> Runs in <strong>\(O(nr)\)</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+
+
+
     <section id="applications" class="card reveal">
       <h2>8. Real-World Applications</h2>
       <div class="grid">
@@ -1524,6 +1588,27 @@
         NP-hard, so in practice simple heuristics are often what actually gets used.</p>
     </section>
 
+
+    <section id="credits" class="card reveal">
+      <h2>Work Distribution &amp; Acknowledgements</h2>
+      <ul>
+        <li><strong>Source Code Repository:</strong> All source files for this interactive report are publicly available
+          on <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>.</li>
+        <li><strong>Work Distribution:</strong> <strong>Deliallisi Klejdi</strong> created the initial website version,
+          framework, and visual style, built the interactive polygon demonstration, wrote the complexity analysis
+          section, and started the theoretical walkthrough. Building on Klejdi's work, <strong>Aknaf Imran</strong>
+          reorganized and expanded the step-by-step theoretical walkthrough to fill any conceptual gaps so that the
+          paper is complete and easy to understand, added accurate illustrative SVG diagrams, improved some of the
+          complexity analysis section, and wrote the post-2002 extensions.</li>
+        <li><strong>External &amp; AI Assistance:</strong> An AI assistant was used to help generate inline SVG diagrams
+          based on prompts from us, and help us create a clean visual layout alongside our text.</li>
+      </ul>
+    </section>
+
+
+
+
+
     <section id="references" class="card reveal">
       <h2>10. References</h2>
       <ul class="refs">
@@ -1541,6 +1626,8 @@
         </li>
         <li>A. Lingas, <em>The Power of Non-Rectilinear Holes</em>, in <em>Automata, Languages and Programming</em>
           (ICALP 1982), Lecture Notes in Computer Science, vol. 140, Springer, 1982, pp. 369–383.</li>
+        <li>J.-M. Lien, N. M. Amato, <em>Approximate convex decomposition of polygons</em>, <em>Computational
+            Geometry</em>, 35(1–2), 2006, pp. 100–123.</li>
       </ul>
     </section>
 
